@@ -1,10 +1,7 @@
 pipeline {
     agent any
 
-    tools {
-        maven 'Maven3'   // correspond au nom configuré dans Jenkins (Manage Jenkins > Tools)
-        jdk 'Java17'     // si tu as configuré un JDK dans Jenkins
-    }
+ 
 
     stages {
         stage('Checkout') {
@@ -15,6 +12,7 @@ pipeline {
 
         stage('Build') {
             steps {
+                // Sur Windows utiliser bat au lieu de sh
                 sh 'mvn clean compile'
             }
         }
@@ -25,7 +23,7 @@ pipeline {
             }
             post {
                 always {
-                    junit 'target/surefire-reports/*.xml'  // rapports de tests Maven
+                    junit 'target/surefire-reports/*.xml'
                 }
             }
         }
