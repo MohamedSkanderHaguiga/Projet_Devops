@@ -1,7 +1,11 @@
 pipeline {
     agent any
 
- 
+    tools {
+        // Remplace par le nom exact configuré dans Jenkins
+        maven 'Maven-3.9.4'    // Exemple : vérifier le nom exact dans Global Tool Configuration
+        jdk 'JDK-17'           // Exemple : vérifier le nom exact dans Global Tool Configuration
+    }
 
     stages {
         stage('Checkout') {
