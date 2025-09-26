@@ -2,38 +2,49 @@ pipeline {
     agent any
 
     tools {
-        // Remplace par le nom exact configuré dans Jenkins
-        maven 'Maven-3.9.4'    // Exemple : vérifier le nom exact dans Global Tool Configuration
-        jdk 'JDK-17'           // Exemple : vérifier le nom exact dans Global Tool Configuration
+        // Nom exact de Maven configuré dans Jenkins
+        maven 'Maven-3.6.3'
+        // Nom exact du JDK configuré dans Jenkins
+        jdk 'Java-17'
+    }
+
+    environment {
+        // Définir JAVA_HOME explicitement si nécessaire
+        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
+        PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
     }
 
     stages {
-        stage('Checkout') {
+        stage('Récupération du code') {
             steps {
+                echo "🔄 Checkout du projet depuis GitHub"
                 git branch: 'main', url: 'https://github.com/MohamedSkanderHaguiga/Projet_Devops.git'
             }
         }
 
-        stage('Build') {
+        stage('Compilation') {
             steps {
-                // Sur Windows utiliser bat au lieu de sh
+                echo "⚙️ Compilation du projet Maven"
                 sh 'mvn clean compile'
             }
         }
 
-        stage('Test') {
+        stage('Tests') {
             steps {
+                echo "🧪 Exécution des tests Maven"
                 sh 'mvn test'
             }
             post {
                 always {
+                    echo "📄 Publication des rapports de tests"
                     junit 'target/surefire-reports/*.xml'
                 }
             }
         }
 
-        stage('Package') {
+        stage('Packaging') {
             steps {
+                echo "📦 Création du package Maven"
                 sh 'mvn package -DskipTests'
                 archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             }
@@ -42,10 +53,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ Build réussi pour le projet Maven"
+            echo "✅ Build et pipeline réussis !"
         }
         failure {
-            echo "❌ Build échoué, vérifier les logs."
+            echo "❌ Échec du pipeline, vérifier les logs."
         }
     }
 }
