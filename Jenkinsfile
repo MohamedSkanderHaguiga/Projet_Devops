@@ -15,16 +15,20 @@ pipeline {
 
         stage('Build') {
             steps {
+                echo "⚙️ Compilation du projet Maven"
                 sh 'mvn clean compile'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'mvn test'
+                echo "🧪 Exécution des tests Maven"
+                // Ajouter -B pour mode batch et éviter les interactions
+                sh 'mvn test -B'
             }
             post {
                 always {
+                    echo "📄 Publication des rapports de tests"
                     junit 'target/surefire-reports/*.xml'
                 }
             }
@@ -32,7 +36,9 @@ pipeline {
 
         stage('Package') {
             steps {
-                sh 'mvn package -DskipTests'
+                echo "📦 Création du package Maven"
+                // Skip tests car ils sont déjà exécutés à l'étape Test
+                sh 'mvn package -DskipTests -B'
                 archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             }
         }
@@ -40,10 +46,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ Build réussi"
+            echo "✅ Build et pipeline réussis !"
         }
         failure {
-            echo "❌ Build échoué"
+            echo "❌ Build échoué, vérifier les logs"
         }
     }
 }
